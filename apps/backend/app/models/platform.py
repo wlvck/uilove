@@ -1,0 +1,19 @@
+from sqlalchemy import Boolean, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.database import Base
+
+
+class Platform(Base):
+    __tablename__ = "platforms"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    slug: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    title: Mapped[str] = mapped_column(String(255))
+    website_url: Mapped[str | None] = mapped_column(String(500))
+    website_count: Mapped[int] = mapped_column(Integer, default=0)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    websites: Mapped[list["Website"]] = relationship(  # noqa: F821
+        back_populates="platform"
+    )
