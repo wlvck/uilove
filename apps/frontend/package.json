@@ -13,7 +13,6 @@
     "@nuxt/icon": "^2.2.1",
     "@nuxt/image": "^2.0.0",
     "@pinia/nuxt": "^0.11.3",
-    "@tailwindcss/vite": "^4.1.18",
     "@vueuse/core": "^14.2.1",
     "@vueuse/nuxt": "^14.2.0",
     "gsap": "^3.14.2",
@@ -22,10 +21,16 @@
     "pinia": "^3.0.4",
     "radix-vue": "^1.9.17",
     "tailwind-animate": "^0.2.10",
-    "tailwindcss": "^4.1.18",
+    "tailwindcss": "3",
     "vue": "^3.5.28",
     "vue-router": "^4.6.4",
     "zod": "^4.3.6"
   },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72",
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@tailwindcss/postcss": "^4.1.18",
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6"
+  }
 }
