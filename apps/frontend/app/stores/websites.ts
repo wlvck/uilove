@@ -16,8 +16,8 @@ export const useWebsitesStore = defineStore('websites', () => {
     error.value = null
     try {
       const response = await fetchWebsites(filters)
-      websites.value = response.data
-      meta.value = response.meta
+      websites.value = response.items
+      meta.value = { page: response.page, size: response.size, total: response.total, pages: response.pages }
     } catch (e: any) {
       error.value = e?.message || 'Failed to load websites'
     } finally {

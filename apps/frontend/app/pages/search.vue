@@ -24,15 +24,15 @@
     </p>
 
     <!-- Grid -->
-    <WebsiteWebsiteGrid
+    <WebsiteGrid
       :websites="websites"
       :loading="loading"
     />
 
     <UiPagination
-      v-if="meta && meta.total_pages > 1"
+      v-if="meta && meta.pages > 1"
       :current-page="page"
-      :total-pages="meta.total_pages"
+      :total-pages="meta.pages"
       @update:current-page="onPageChange"
     />
   </div>
@@ -67,8 +67,8 @@ async function doSearch() {
 
   try {
     const response = await fetchWebsites({ q: query.value.trim(), page: page.value })
-    websites.value = response.data
-    meta.value = response.meta
+    websites.value = response.items
+    meta.value = { page: response.page, size: response.size, total: response.total, pages: response.pages }
   } catch (e: any) {
     console.error('Search failed:', e)
   } finally {

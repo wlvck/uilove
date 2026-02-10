@@ -34,7 +34,7 @@
         {{ website.title }}
       </h3>
 
-      <div class="mt-2 flex items-center gap-2 flex-wrap">
+      <div v-if="website.categories?.length" class="mt-2 flex items-center gap-2 flex-wrap">
         <UiBadge v-for="cat in website.categories.slice(0, 2)" :key="cat.slug" size="sm">
           {{ cat.title }}
         </UiBadge>

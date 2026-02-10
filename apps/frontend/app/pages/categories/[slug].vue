@@ -10,7 +10,7 @@
     </div>
 
     <!-- Grid -->
-    <WebsiteWebsiteGrid
+    <WebsiteGrid
       :websites="websites"
       :loading="loading"
     />
@@ -18,7 +18,7 @@
     <UiPagination
       v-if="meta"
       :current-page="page"
-      :total-pages="meta.total_pages"
+      :total-pages="meta.pages"
       @update:current-page="onPageChange"
     />
   </div>
@@ -55,8 +55,8 @@ async function loadData() {
       title.value = categoryData.title
       description.value = categoryData.description
     }
-    websites.value = response.data
-    meta.value = response.meta
+    websites.value = response.items
+    meta.value = { page: response.page, size: response.size, total: response.total, pages: response.pages }
   } catch (e: any) {
     console.error('Failed to load category:', e)
   } finally {

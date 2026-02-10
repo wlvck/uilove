@@ -24,13 +24,13 @@
 
     <!-- Detail -->
     <template v-else-if="website">
-      <WebsiteWebsiteDetail :website="website" />
+      <WebsiteDetail :website="website" />
 
       <!-- Related -->
       <section v-if="related.length" class="mt-16">
         <h2 class="text-lg font-semibold text-text-primary mb-6">Related Websites</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <WebsiteWebsiteCard
+          <WebsiteCard
             v-for="site in related"
             :key="site.id"
             :website="site"
@@ -65,7 +65,7 @@ try {
 
   if (data.categories.length) {
     const res = await fetchWebsites({ category: data.categories[0].slug })
-    related.value = res.data.filter(w => w.slug !== slug).slice(0, 3)
+    related.value = res.items.filter(w => w.slug !== slug).slice(0, 3)
   }
 } catch (e: any) {
   error.value = e?.message || 'Failed to load website'

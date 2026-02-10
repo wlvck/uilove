@@ -33,10 +33,11 @@ export interface Website {
   is_featured: boolean
   view_count: number
   created_at: string
-  categories: CategoryBrief[]
-  styles: StyleBrief[]
-  collections: CollectionBrief[]
-  platform: PlatformBrief | null
+  // These fields are only present in detail view (WebsiteRead), not in list view (WebsiteListItem)
+  categories?: CategoryBrief[]
+  styles?: StyleBrief[]
+  collections?: CollectionBrief[]
+  platform?: PlatformBrief | null
 }
 
 export interface Category extends CategoryBrief {
@@ -62,14 +63,17 @@ export interface Platform extends PlatformBrief {
 
 export interface PaginationMeta {
   page: number
-  per_page: number
+  size: number
   total: number
-  total_pages: number
+  pages: number
 }
 
 export interface PaginatedResponse<T> {
-  data: T[]
-  meta: PaginationMeta
+  items: T[]
+  page: number
+  size: number
+  total: number
+  pages: number
 }
 
 export interface Filters {

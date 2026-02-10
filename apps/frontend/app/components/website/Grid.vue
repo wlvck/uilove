@@ -2,7 +2,7 @@
   <div>
     <!-- Loading -->
     <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <WebsiteWebsiteSkeleton v-for="i in skeletonCount" :key="i" />
+      <WebsiteSkeleton v-for="i in skeletonCount" :key="i" />
     </div>
 
     <!-- Empty -->
@@ -14,7 +14,7 @@
 
     <!-- Grid -->
     <div v-else ref="gridRef" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <WebsiteWebsiteCard
+      <WebsiteCard
         v-for="website in websites"
         :key="website.id"
         :website="website"

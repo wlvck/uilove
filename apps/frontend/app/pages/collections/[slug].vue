@@ -7,7 +7,7 @@
       <h1 class="text-3xl font-bold text-text-primary">{{ title }}</h1>
     </div>
 
-    <WebsiteWebsiteGrid
+    <WebsiteGrid
       :websites="websites"
       :loading="loading"
     />
@@ -15,7 +15,7 @@
     <UiPagination
       v-if="meta"
       :current-page="page"
-      :total-pages="meta.total_pages"
+      :total-pages="meta.pages"
       @update:current-page="onPageChange"
     />
   </div>
@@ -48,8 +48,8 @@ async function loadData() {
       fetchCollectionWebsites(slug, page.value),
     ])
     if (collectionData) title.value = collectionData.title
-    websites.value = response.data
-    meta.value = response.meta
+    websites.value = response.items
+    meta.value = { page: response.page, size: response.size, total: response.total, pages: response.pages }
   } catch (e: any) {
     console.error('Failed to load collection:', e)
   } finally {

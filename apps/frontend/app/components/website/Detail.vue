@@ -44,7 +44,7 @@
       </div>
 
       <!-- Tags -->
-      <div class="flex flex-wrap gap-2">
+      <div v-if="website.categories?.length || website.styles?.length || website.platform" class="flex flex-wrap gap-2">
         <NuxtLink
           v-for="cat in website.categories"
           :key="cat.slug"

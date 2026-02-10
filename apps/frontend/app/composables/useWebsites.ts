@@ -6,7 +6,7 @@ export function useWebsites() {
   async function fetchWebsites(filters: Filters = {}): Promise<PaginatedResponse<Website>> {
     return getPaginated<Website>('/websites', {
       page: filters.page,
-      per_page: 20,
+      size: 20,
       category: filters.category,
       style: filters.style,
       collection: filters.collection,

@@ -39,7 +39,7 @@
       <LayoutSidebar />
 
       <div class="flex-1 min-w-0">
-        <WebsiteWebsiteGrid
+        <WebsiteGrid
           :websites="websitesStore.websites"
           :loading="websitesStore.loading"
         />
@@ -47,7 +47,7 @@
         <UiPagination
           v-if="websitesStore.meta"
           :current-page="filters.page || 1"
-          :total-pages="websitesStore.meta.total_pages"
+          :total-pages="websitesStore.meta.pages"
           @update:current-page="(p) => setFilter('page', p)"
         />
       </div>
