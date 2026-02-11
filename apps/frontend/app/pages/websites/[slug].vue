@@ -9,14 +9,33 @@
       Back
     </button>
 
-    <!-- Loading -->
-    <UiLoadingSpinner v-if="loading" size="lg" />
+    <!-- Loading Skeleton -->
+    <template v-if="pending">
+      <div class="animate-pulse">
+        <!-- Image skeleton -->
+        <div class="aspect-video bg-bg-tertiary rounded-xl mb-6" />
+        <!-- Title skeleton -->
+        <div class="h-8 bg-bg-tertiary rounded w-2/3 mb-4" />
+        <!-- Description skeleton -->
+        <div class="space-y-2 mb-6">
+          <div class="h-4 bg-bg-tertiary rounded w-full" />
+          <div class="h-4 bg-bg-tertiary rounded w-5/6" />
+          <div class="h-4 bg-bg-tertiary rounded w-4/6" />
+        </div>
+        <!-- Tags skeleton -->
+        <div class="flex gap-2">
+          <div class="h-6 bg-bg-tertiary rounded-full w-20" />
+          <div class="h-6 bg-bg-tertiary rounded-full w-24" />
+          <div class="h-6 bg-bg-tertiary rounded-full w-16" />
+        </div>
+      </div>
+    </template>
 
     <!-- Error -->
     <div v-else-if="error" class="text-center py-20">
       <Icon name="ph:warning" class="h-12 w-12 text-text-tertiary mx-auto mb-4" />
       <h2 class="text-lg font-medium text-text-secondary mb-2">Website not found</h2>
-      <p class="text-sm text-text-tertiary mb-6">{{ error }}</p>
+      <p class="text-sm text-text-tertiary mb-6">{{ error.message }}</p>
       <NuxtLink to="/">
         <UiButton>Go home</UiButton>
       </NuxtLink>
@@ -50,26 +69,23 @@ const slug = route.params.slug as string
 
 const { fetchWebsite, fetchWebsites } = useWebsites()
 
-const website = ref<Website | null>(null)
+const { data: website, pending, error } = await useLazyAsyncData(
+  `website-${slug}`,
+  () => fetchWebsite(slug)
+)
+
 const related = ref<Website[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
 
 useSeoMeta({
   title: () => website.value ? `${website.value.title} - UILove` : 'UILove',
 })
 
-try {
-  const data = await fetchWebsite(slug)
-  website.value = data
-
-  if (data.categories.length) {
-    const res = await fetchWebsites({ category: data.categories[0].slug })
+// Fetch related websites when main data loads
+watch(website, async (data) => {
+  const firstCategory = data?.categories?.[0]
+  if (firstCategory) {
+    const res = await fetchWebsites({ category: firstCategory.slug })
     related.value = res.items.filter(w => w.slug !== slug).slice(0, 3)
   }
-} catch (e: any) {
-  error.value = e?.message || 'Failed to load website'
-} finally {
-  loading.value = false
-}
+}, { immediate: true })
 </script>

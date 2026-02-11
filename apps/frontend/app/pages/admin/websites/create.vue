@@ -66,35 +66,11 @@
         </UiFormField>
       </div>
 
-      <UiFormField label="Platform">
-        <UiSelect
-          v-model="form.platform_id"
-          :options="platforms"
-          placeholder="Select platform..."
-        />
-      </UiFormField>
-
       <UiFormField label="Categories">
         <UiMultiSelect
           v-model="form.category_ids"
           :options="categories"
           placeholder="Select categories..."
-        />
-      </UiFormField>
-
-      <UiFormField label="Styles">
-        <UiMultiSelect
-          v-model="form.style_ids"
-          :options="styles"
-          placeholder="Select styles..."
-        />
-      </UiFormField>
-
-      <UiFormField label="Collections">
-        <UiMultiSelect
-          v-model="form.collection_ids"
-          :options="collections"
-          placeholder="Select collections..."
         />
       </UiFormField>
 
@@ -122,7 +98,18 @@
 </template>
 
 <script setup lang="ts">
-import type { WebsiteCreate, Category, Style, Collection, Platform } from '~/types'
+import type { WebsiteCreate, Category } from '~/types'
+
+interface WebsiteForm {
+  title: string
+  slug: string
+  description: string
+  original_url: string
+  thumbnail_url: string
+  image_url: string
+  is_featured: boolean
+  category_ids: number[]
+}
 
 definePageMeta({
   layout: 'admin',
@@ -135,9 +122,9 @@ useSeoMeta({
 
 const router = useRouter()
 const { post } = useAdminApi()
-const { fetchCategories, fetchStyles, fetchCollections, fetchPlatforms } = useCategories()
+const { fetchCategories } = useCategories()
 
-const form = reactive<WebsiteCreate>({
+const form = reactive<WebsiteForm>({
   title: '',
   slug: '',
   description: '',
@@ -145,10 +132,7 @@ const form = reactive<WebsiteCreate>({
   thumbnail_url: '',
   image_url: '',
   is_featured: false,
-  platform_id: undefined,
   category_ids: [],
-  style_ids: [],
-  collection_ids: [],
 })
 
 const errors = reactive<Record<string, string>>({})
@@ -156,9 +140,6 @@ const submitting = ref(false)
 const submitError = ref('')
 
 const categories = ref<Category[]>([])
-const styles = ref<Style[]>([])
-const collections = ref<Collection[]>([])
-const platforms = ref<Platform[]>([])
 
 function generateSlug() {
   if (!form.slug || form.slug === slugify(form.title.slice(0, -1))) {
@@ -206,10 +187,7 @@ async function handleSubmit() {
       thumbnail_url: form.thumbnail_url || null,
       image_url: form.image_url || null,
       is_featured: form.is_featured,
-      platform_id: form.platform_id || null,
       category_ids: form.category_ids,
-      style_ids: form.style_ids,
-      collection_ids: form.collection_ids,
     }
 
     await post('/websites', data)
@@ -222,15 +200,6 @@ async function handleSubmit() {
 }
 
 // Load taxonomy data
-const [categoriesData, stylesData, collectionsData, platformsData] = await Promise.all([
-  fetchCategories(),
-  fetchStyles(),
-  fetchCollections(),
-  fetchPlatforms(),
-])
-
+const categoriesData = await fetchCategories()
 categories.value = categoriesData
-styles.value = stylesData
-collections.value = collectionsData
-platforms.value = platformsData
 </script>

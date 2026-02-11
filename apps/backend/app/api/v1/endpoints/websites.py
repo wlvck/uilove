@@ -82,7 +82,7 @@ async def create_website(body: WebsiteCreate, db: DB, _admin: AdminUser):
 
 @router.put("/{slug}", response_model=WebsiteRead)
 async def update_website(slug: str, body: WebsiteUpdate, db: DB, _admin: AdminUser):
-    website = await crud_website.get_by_slug(db, slug)
+    website = await crud_website.get_by_slug(db, slug, include_inactive=True)
     if website is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Website not found")
     data = body.model_dump(exclude_unset=True)
@@ -103,7 +103,7 @@ async def update_website(slug: str, body: WebsiteUpdate, db: DB, _admin: AdminUs
 
 @router.delete("/{slug}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_website(slug: str, db: DB, _admin: AdminUser):
-    website = await crud_website.get_by_slug(db, slug)
+    website = await crud_website.get_by_slug(db, slug, include_inactive=True)
     if website is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Website not found")
     await crud_website.delete(db, website)

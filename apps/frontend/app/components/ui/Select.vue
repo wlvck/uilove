@@ -1,5 +1,5 @@
 <template>
-  <SelectRoot :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)">
+  <SelectRoot :model-value="modelValue != null ? String(modelValue) : undefined" @update:model-value="$emit('update:modelValue', $event)">
     <SelectTrigger
       class="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-bg-tertiary border text-sm transition-colors"
       :class="error ? 'border-red-500' : 'border-border focus:border-accent/50 focus:ring-1 focus:ring-accent/50'"

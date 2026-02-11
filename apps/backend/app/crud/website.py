@@ -25,10 +25,13 @@ class CRUDWebsite(CRUDBase[Website]):
             selectinload(Website.platform),
         )
 
-    async def get_by_slug(self, db: AsyncSession, slug: str) -> Website | None:
-        result = await db.execute(
-            self._base_query().where(Website.slug == slug, Website.is_active.is_(True))
-        )
+    async def get_by_slug(
+        self, db: AsyncSession, slug: str, *, include_inactive: bool = False
+    ) -> Website | None:
+        stmt = self._base_query().where(Website.slug == slug)
+        if not include_inactive:
+            stmt = stmt.where(Website.is_active.is_(True))
+        result = await db.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_multi(
@@ -225,31 +228,40 @@ class CRUDWebsite(CRUDBase[Website]):
         collection_ids: list[int] | None = None,
         **kwargs,
     ) -> Website:
+        # Pre-fetch related objects before creating the website
+        cats = []
+        styles_list = []
+        cols = []
+
+        if category_ids:
+            cats = list((await db.execute(
+                select(Category).where(Category.id.in_(category_ids))
+            )).scalars().all())
+
+        if style_ids:
+            styles_list = list((await db.execute(
+                select(Style).where(Style.id.in_(style_ids))
+            )).scalars().all())
+
+        if collection_ids:
+            cols = list((await db.execute(
+                select(Collection).where(Collection.id.in_(collection_ids))
+            )).scalars().all())
+
+        # Create website with relationships initialized
         website = Website(**kwargs)
+        website.categories = cats
+        website.styles = styles_list
+        website.collections = cols
+
         db.add(website)
         await db.flush()
 
-        if category_ids:
-            cats = (await db.execute(
-                select(Category).where(Category.id.in_(category_ids))
-            )).scalars().all()
-            website.categories = list(cats)
-
-        if style_ids:
-            styles = (await db.execute(
-                select(Style).where(Style.id.in_(style_ids))
-            )).scalars().all()
-            website.styles = list(styles)
-
-        if collection_ids:
-            cols = (await db.execute(
-                select(Collection).where(Collection.id.in_(collection_ids))
-            )).scalars().all()
-            website.collections = list(cols)
-
-        await db.flush()
-        await db.refresh(website)
-        return website
+        # Reload with all relationships eagerly loaded
+        result = await db.execute(
+            self._base_query().where(Website.id == website.id)
+        )
+        return result.scalar_one()
 
     async def update_with_relations(
         self,
@@ -266,26 +278,30 @@ class CRUDWebsite(CRUDBase[Website]):
                 setattr(website, key, value)
 
         if category_ids is not None:
-            cats = (await db.execute(
-                select(Category).where(Category.id.in_(category_ids))
-            )).scalars().all()
-            website.categories = list(cats)
+            cats = list((await db.execute(
+                select(Category).where(Category.id.in_(category_ids)) if category_ids else select(Category).where(False)
+            )).scalars().all()) if category_ids else []
+            website.categories = cats
 
         if style_ids is not None:
-            styles = (await db.execute(
-                select(Style).where(Style.id.in_(style_ids))
-            )).scalars().all()
-            website.styles = list(styles)
+            styles_list = list((await db.execute(
+                select(Style).where(Style.id.in_(style_ids)) if style_ids else select(Style).where(False)
+            )).scalars().all()) if style_ids else []
+            website.styles = styles_list
 
         if collection_ids is not None:
-            cols = (await db.execute(
-                select(Collection).where(Collection.id.in_(collection_ids))
-            )).scalars().all()
-            website.collections = list(cols)
+            cols = list((await db.execute(
+                select(Collection).where(Collection.id.in_(collection_ids)) if collection_ids else select(Collection).where(False)
+            )).scalars().all()) if collection_ids else []
+            website.collections = cols
 
         await db.flush()
-        await db.refresh(website)
-        return website
+
+        # Reload with all relationships eagerly loaded
+        result = await db.execute(
+            self._base_query().where(Website.id == website.id)
+        )
+        return result.scalar_one()
 
 
 crud_website = CRUDWebsite(Website)

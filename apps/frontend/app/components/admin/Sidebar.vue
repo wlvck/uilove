@@ -43,10 +43,6 @@ const route = useRoute()
 
 const navItems = [
   { to: '/admin/websites', label: 'Websites', icon: 'ph:globe' },
-  { to: '/admin/categories', label: 'Categories', icon: 'ph:folders' },
-  { to: '/admin/styles', label: 'Styles', icon: 'ph:palette' },
-  { to: '/admin/collections', label: 'Collections', icon: 'ph:stack' },
-  { to: '/admin/platforms', label: 'Platforms', icon: 'ph:app-window' },
 ]
 
 function isActive(path: string): boolean {

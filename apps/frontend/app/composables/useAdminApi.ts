@@ -35,7 +35,7 @@ export function useAdminApi() {
     return authGet<PaginatedResponse<T>>(endpoint, params)
   }
 
-  async function post<T, D = unknown>(endpoint: string, data: D): Promise<T> {
+  async function post<T>(endpoint: string, data: Record<string, any>): Promise<T> {
     return await $fetch<T>(`${baseURL}${endpoint}`, {
       method: 'POST',
       headers: getHeaders(),
@@ -43,7 +43,7 @@ export function useAdminApi() {
     })
   }
 
-  async function put<T, D = unknown>(endpoint: string, data: D): Promise<T> {
+  async function put<T>(endpoint: string, data: Record<string, any>): Promise<T> {
     return await $fetch<T>(`${baseURL}${endpoint}`, {
       method: 'PUT',
       headers: getHeaders(),

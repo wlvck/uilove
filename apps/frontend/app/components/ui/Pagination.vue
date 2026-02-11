@@ -18,7 +18,7 @@
             ? 'bg-accent text-white'
             : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary',
         ]"
-        @click="$emit('update:currentPage', page)"
+        @click="$emit('update:currentPage', page as number)"
       >
         {{ page }}
       </button>
