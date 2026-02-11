@@ -4,10 +4,16 @@ from fastapi import APIRouter, HTTPException, Query, status
 
 from app.api.deps import DB, AdminUser
 from app.core.cache import cache_delete_pattern
+from app.crud.base import CRUDBase
 from app.crud.website import crud_website
+from app.models.category import Category
+from app.models.style import Style
 from app.models.website import Website
 from app.schemas.common import PaginatedResponse
 from app.schemas.website import WebsiteCreate, WebsiteListItem, WebsiteRead, WebsiteUpdate
+
+crud_category = CRUDBase[Category](Category)
+crud_style = CRUDBase[Style](Style)
 
 router = APIRouter(prefix="/websites", tags=["websites"])
 
@@ -20,10 +26,35 @@ async def list_websites(
     category: str | None = None,
     style: str | None = None,
 ):
+    offset = (page - 1) * size
+
+    # Filter by category if provided
+    if category:
+        cat = await crud_category.get_by_slug(db, category)
+        if cat is None:
+            return PaginatedResponse(items=[], total=0, page=page, size=size, pages=0)
+        items = await crud_website.get_by_category(db, cat.id, offset=offset, limit=size)
+        total = await crud_website.count_by_category(db, cat.id)
+        return PaginatedResponse(
+            items=items, total=total, page=page, size=size,
+            pages=math.ceil(total / size) if size else 0,
+        )
+
+    # Filter by style if provided
+    if style:
+        st = await crud_style.get_by_slug(db, style)
+        if st is None:
+            return PaginatedResponse(items=[], total=0, page=page, size=size, pages=0)
+        items = await crud_website.get_by_style(db, st.id, offset=offset, limit=size)
+        total = await crud_website.count_by_style(db, st.id)
+        return PaginatedResponse(
+            items=items, total=total, page=page, size=size,
+            pages=math.ceil(total / size) if size else 0,
+        )
+
+    # No filters - return all
     filters = [Website.is_active.is_(True)]
-    items = await crud_website.get_multi(
-        db, offset=(page - 1) * size, limit=size, filters=filters
-    )
+    items = await crud_website.get_multi(db, offset=offset, limit=size, filters=filters)
     total = await crud_website.count(db, filters=filters)
     return PaginatedResponse(
         items=items, total=total, page=page, size=size,
