@@ -34,10 +34,21 @@ uilove/
 
 ## Quick Start
 
+### Option 1: Docker (Full Stack)
+
 ```bash
-# 1. Start databases
-cd apps/backend
-docker-compose up -d
+# Run everything with Docker
+docker compose up -d
+
+# API: http://localhost:8000
+# App: http://localhost:3000
+```
+
+### Option 2: Development (Local)
+
+```bash
+# 1. Start databases only
+docker compose -f docker-compose.dev.yml up -d
 
 # 2. Run backend (terminal 1)
 cd apps/backend
@@ -204,13 +215,26 @@ interface Filters {
 
 ## Commands Reference
 
+### Docker
+
+```bash
+# Full stack (production-like)
+docker compose up -d              # Start all services
+docker compose down               # Stop all services
+docker compose logs -f            # View logs
+
+# Development (databases only)
+docker compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml down
+```
+
 ### Backend
 
 ```bash
 cd apps/backend
-docker-compose up -d          # Start DB
 uv run uvicorn app.main:app --reload  # Run server
-uv run alembic upgrade head   # Migrations
+uv run alembic upgrade head           # Migrations
+uv run pytest                         # Run tests
 uv run python -m scripts.import_data --all  # Import data
 ```
 
@@ -221,6 +245,7 @@ cd apps/frontend
 yarn dev          # Dev server
 yarn build        # Production build
 yarn preview      # Preview build
+yarn typecheck    # Type check
 ```
 
 ## Documentation
