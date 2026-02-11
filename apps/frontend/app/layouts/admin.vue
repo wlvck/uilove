@@ -10,14 +10,14 @@
       </main>
     </div>
   </div>
-  <div v-else class="min-h-screen flex items-center justify-center bg-bg">
+  <div v-else class="min-h-screen flex justify-center bg-bg">
     <UiLoadingSpinner size="lg" />
   </div>
 </template>
 
 <script setup lang="ts">
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 // Only show content when authenticated (prevents flash)
-const isReady = computed(() => authStore.isAuthenticated)
+const isReady = computed(() => authStore.isAuthenticated);
 </script>

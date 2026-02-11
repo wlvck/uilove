@@ -30,18 +30,24 @@
           />
         </UiFormField>
 
-        <div v-if="authStore.error" class="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+        <div
+          v-if="authStore.error"
+          class="p-3 rounded-lg bg-red-500/10 border border-red-500/20"
+        >
           <p class="text-sm text-red-400">{{ authStore.error }}</p>
         </div>
 
         <UiButton type="submit" class="w-full" :disabled="authStore.loading">
-          {{ authStore.loading ? 'Signing in...' : 'Sign in' }}
+          {{ authStore.loading ? "Signing in..." : "Sign in" }}
         </UiButton>
       </form>
 
       <!-- Back link -->
       <div class="mt-6 text-center">
-        <NuxtLink to="/" class="text-sm text-text-tertiary hover:text-text-secondary transition-colors">
+        <NuxtLink
+          to="/"
+          class="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
+        >
           &larr; Back to site
         </NuxtLink>
       </div>
@@ -52,40 +58,40 @@
 <script setup lang="ts">
 definePageMeta({
   layout: false,
-  middleware: 'auth',
-})
+  middleware: "auth",
+});
 
 useSeoMeta({
-  title: 'Admin Login - UILove',
-})
+  title: "Admin Login - UILove",
+});
 
-const router = useRouter()
-const authStore = useAuthStore()
-const { login } = useAuth()
+const router = useRouter();
+const authStore = useAuthStore();
+const { login } = useAuth();
 
 const form = reactive({
-  email: '',
-  password: '',
-})
+  email: "",
+  password: "",
+});
 
-const errors = reactive<Record<string, string>>({})
+const errors = reactive<Record<string, string>>({});
 
 async function handleSubmit() {
-  errors.email = ''
-  errors.password = ''
+  errors.email = "";
+  errors.password = "";
 
   if (!form.email) {
-    errors.email = 'Email is required'
-    return
+    errors.email = "Email is required";
+    return;
   }
   if (!form.password) {
-    errors.password = 'Password is required'
-    return
+    errors.password = "Password is required";
+    return;
   }
 
   try {
-    await login(form.email, form.password)
-    router.push('/admin/websites')
+    await login(form.email, form.password);
+    router.push("/admin/websites");
   } catch {
     // Error is handled in authStore
   }
